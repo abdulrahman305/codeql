@@ -348,7 +348,8 @@ module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
       not stateBarrier(node2, state2)
     }
 
-    pragma[nomagic]
+    bindingset[n, cc]
+    pragma[inline_late]
     private predicate isUnreachableInCall1(NodeEx n, LocalCallContextSpecificCall cc) {
       cc.unreachable(n.asNode())
     }
@@ -3904,10 +3905,12 @@ module MakeImpl<LocationSig Location, InputSig<Location> Lang> {
       final predicate isSinkGroup(string group) { this = TPathNodeSinkGroup(group) }
     }
 
+    private import codeql.dataflow.test.ProvenancePathGraph as ProvenancePathGraph
+
     /**
      * Provides the query predicates needed to include a graph in a path-problem query.
      */
-    module PathGraph implements PathGraphSig<PathNode> {
+    module PathGraph implements PathGraphSig<PathNode>, ProvenancePathGraph::PathGraphSig<PathNode> {
       /** Holds if `(a,b)` is an edge in the graph of data flow path explanations. */
       query predicate edges(PathNode a, PathNode b, string key, string val) {
         a.(PathNodeImpl).getANonHiddenSuccessor(val) = b and
