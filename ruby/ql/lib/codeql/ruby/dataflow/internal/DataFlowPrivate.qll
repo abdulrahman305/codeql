@@ -646,6 +646,8 @@ private module Cached {
     or
     LocalFlow::localSsaFlowStepUseUse(_, nodeFrom, nodeTo)
     or
+    LocalFlow::localFlowSsaInputFromRead(_, nodeFrom, nodeTo)
+    or
     // Simple flow through library code is included in the exposed local
     // step relation, even though flow is technically inter-procedural
     FlowSummaryImpl::Private::Steps::summaryThroughStepValue(nodeFrom, nodeTo, _)
@@ -725,6 +727,7 @@ private module Cached {
   newtype TOptionalContentSet =
     TSingletonContent(Content c) or
     TAnyElementContent() or
+    TAnyContent() or
     TKnownOrUnknownElementContent(Content::KnownElementContent c) or
     TElementLowerBoundContent(int lower, boolean includeUnknown) {
       FlowSummaryImpl::ParsePositions::isParsedElementLowerBoundPosition(_, includeUnknown, lower)
@@ -736,7 +739,7 @@ private module Cached {
 
   cached
   class TContentSet =
-    TSingletonContent or TAnyElementContent or TKnownOrUnknownElementContent or
+    TSingletonContent or TAnyElementContent or TAnyContent or TKnownOrUnknownElementContent or
         TElementLowerBoundContent or TElementContentOfTypeContent;
 
   private predicate trackKnownValue(ConstantValue cv) {
@@ -2086,7 +2089,6 @@ private predicate compatibleTypesNonSymRefl(DataFlowType t1, DataFlowType t2) {
  * Holds if `t1` and `t2` are compatible, that is, whether data can flow from
  * a node of type `t1` to a node of type `t2`.
  */
-pragma[inline]
 predicate compatibleTypes(DataFlowType t1, DataFlowType t2) {
   t1 = t2
   or
